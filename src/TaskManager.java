@@ -16,6 +16,10 @@ class Task implements Serializable {
     public enum Size {
         SMALL, MEDIUM, LARGE
     }
+
+    public enum TaskType {
+        ASSIGNMENT, TESTPREP, RETAKE
+    }
     
     private String name;
     private String subject;
@@ -24,8 +28,9 @@ class Task implements Serializable {
     private LocalDate completionDate;
     private Status status;
     private Size size;
+    private TaskType taskType;
     
-    public Task(String name, String subject, LocalDate dueDate, Status status, Size size) {
+    public Task(String name, String subject, LocalDate dueDate, Status status, Size size, TaskType taskType) {
         this.name = name;
         this.subject = subject;
         this.dueDate = dueDate;
@@ -33,6 +38,7 @@ class Task implements Serializable {
         this.status = status;
         this.size = size;
         this.completionDate = null;
+        this.taskType = taskType;
     }
     
     // Getters and setters
@@ -62,13 +68,16 @@ class Task implements Serializable {
     
     public Size getSize() { return size; }
     public void setSize(Size size) { this.size = size; }
+
+    public TaskType getTaskType() { return taskType; }
+    public void setTaskType(TaskType taskType) { this.taskType = taskType; }
     
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return String.format("Task: %s | Subject: %s | Due: %s | Created: %s | Status: %s | Size: %s | Completed: %s",
+        return String.format("Task: %s | Subject: %s | Due: %s | Created: %s | Status: %s | Size: %s | TaskType: %s | Completed: %s",
                 name, subject, dueDate.format(formatter), creationDate.format(formatter), 
-                status, size, completionDate != null ? completionDate.format(formatter) : "N/A");
+                status, size, taskType, completionDate != null ? completionDate.format(formatter) : "N/A");
     }
 }
 
@@ -126,8 +135,9 @@ public class TaskManager {
         
         Task.Status status = getStatusInput();
         Task.Size size = getSizeInput();
+        Task.TaskType taskType = getTaskTypeInput();
         
-        Task newTask = new Task(name, subject, dueDate, status, size);
+        Task newTask = new Task(name, subject, dueDate, status, size, taskType);
         tasks.add(newTask);
         saveTasksToFile();
         
@@ -306,6 +316,24 @@ public class TaskManager {
             default:
                 System.out.println("Invalid choice. Defaulting to Medium.");
                 return Task.Size.MEDIUM;
+        }
+    }
+
+    private Task.TaskType getTaskTypeInput() {
+        System.out.println("Select size:");
+        System.out.println("1. Assignment");
+        System.out.println("2. TestPrep");
+        System.out.println("3. Retake");
+        System.out.print("Choose size (1-3): ");
+        
+        int choice = getIntInput();
+        switch (choice) {
+            case 1: return Task.TaskType.ASSIGNMENT;
+            case 2: return Task.TaskType.TESTPREP;
+            case 3: return Task.TaskType.RETAKE;
+            default:
+                System.out.println("Invalid choice. Defaulting to Medium.");
+                return Task.TaskType.ASSIGNMENT;
         }
     }
     
